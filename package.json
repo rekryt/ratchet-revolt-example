@@ -1,0 +1,16 @@
+{
+    "name": "php8-async-example",
+    "version": "1.0.0",
+    "description": "Example of use new PHP 8.1 Fibers",
+    "author": "Krupkin Sergey <rekrytkw@gmail.com>",
+    "dependencies": {},
+    "devDependencies": {
+        "@prettier/plugin-php": "^0.17.6",
+        "prettier": "^2.5.1"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "license": "MIT"
+}

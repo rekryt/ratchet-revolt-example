@@ -1,0 +1,28 @@
+{
+    "name": "rekryt/php8-async-example",
+    "description": "Example of use new PHP 8.1 Fibers",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Krupkin Sergey",
+            "email": "rekrytkw@gmail.com",
+            "homepage": "https://vk.com/krupkin.sergey"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "cboden/ratchet": "^0.4.1",
+        "amphp/amp": "v3.x-dev as v2.6.1",
+        "revolt/event-loop": "^0.2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Example\\": "src/",
+            "Amp\\ReactAdapter\\": "lib/react-adapter/src"
+        },
+        "files": [
+            "lib/react-adapter/etc/Factory.php"
+        ]
+    }
+}
