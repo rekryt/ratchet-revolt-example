@@ -1,7 +1,7 @@
 {
-    "name": "php8-async-example",
+    "name": "ratchet-revolt-example",
     "version": "1.0.0",
-    "description": "Example of use new PHP 8.1 Fibers",
+    "description": "Example of use PHP 8.1 Fibers",
     "author": "Krupkin Sergey <rekrytkw@gmail.com>",
     "dependencies": {},
     "devDependencies": {

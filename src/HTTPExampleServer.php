@@ -1,5 +1,5 @@
 <?php
-namespace Example;
+namespace RatchetRevoltExample;
 
 use Exception;
 use Psr\Http\Message\RequestInterface;
@@ -8,7 +8,7 @@ use Ratchet\Http\HttpServerInterface;
 
 /**
  * Class HTTPExampleServer
- * @package Example
+ * @package RatchetRevoltExample
  */
 class HTTPExampleServer implements HttpServerInterface {
     /**
@@ -16,13 +16,12 @@ class HTTPExampleServer implements HttpServerInterface {
      * @param RequestInterface|null $request
      */
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
-        // TODO: Implement onOpen() method.
         $contentType = 'application/json; charset=utf-8'; // or 'text/plain'
         if ($request->getUri()->getPath() == '/api') {
-            $body = json_encode(['hello']);
+            $body = rand(0, 100);
         } else {
             $contentType = 'text/html; charset=UTF-8';
-            $body = file_get_contents(__DIR__ . '/index.html');
+            $body = file_get_contents(__DIR__ . '/static/index.html');
         }
 
         $e = "\r\n";

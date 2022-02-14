@@ -23,12 +23,18 @@ ADD .docker/php/docker-php-ext-redis.ini /usr/local/etc/php/conf.d/docker-php-ex
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
 	&& chmod 755 /usr/bin/composer
 
+# pcntl
+RUN docker-php-ext-configure pcntl --enable-pcntl \
+    && docker-php-ext-install pcntl
+
+# git
+RUN apt-get install -y git
+
 RUN apt-get clean
 
 COPY ./composer.json /app/
 COPY ./index.php /app/
 COPY ./src/ /app/src/
-COPY ./lib/ /app/lib/
 
 WORKDIR /app
 

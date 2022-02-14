@@ -10,5 +10,4 @@ services:
       - 81:81
     volumes:
       - ./src:/app/src
-      - ./lib:/app/lib
       - ./index.php:/app/index.php

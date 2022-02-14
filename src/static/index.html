@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+        />
+    </head>
+    <body>
+        <div id="app">
+            <v-app>
+                <v-main>
+                    <v-container>
+                        <v-row>
+                            <v-col>
+                                <v-select
+                                    :items="[10,20,30,50,100,150,200,300]"
+                                    v-model="count"
+                                    label="task count"
+                                ></v-select>
+                            </v-col>
+                            <v-col>
+                                <v-select
+                                    label="task processing"
+                                    :items="[{text: 'Async (parallel)', value: true}, {text: 'Sync (in series)', value: false}]"
+                                    v-model="async"
+                                ></v-select>
+                            </v-col>
+                        </v-row>
+                        <v-card class="mx-auto" max-width="400" tile>
+                            <v-list-item>
+                                <v-list-item-content>
+                                    <v-list-item-title>
+                                        <v-row>
+                                            <v-col>
+                                                <v-select
+                                                    :items="[
+                                                    {text: '1 req\\s', value: 1000},
+                                                    {text: '2 req\\s', value: 500},
+                                                    {text: '5 req\\s', value: 200},
+                                                    {text: '10 req\\s', value: 100},
+                                                 ]"
+                                                    v-model="timeout"
+                                                    label="frequency"
+                                                ></v-select>
+                                            </v-col>
+                                            <v-col>
+                                                <v-btn v-if="!isProcess" @click="startTest" color="green">Start</v-btn>
+                                                <v-btn v-else @click="stopTest" color="red">Stop</v-btn>
+                                            </v-col>
+                                        </v-row>
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+
+                            <v-list-item three-line>
+                                <v-list-item-content>
+                                    <v-list-item-title>Memory</v-list-item-title>
+                                    <v-list-item-subtitle>{{ memory }}MiB</v-list-item-subtitle>
+                                    <v-list-item-subtitle>{{ memoryRate }}KiB/s</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+
+                            <v-list-item two-line>
+                                <v-list-item-content>
+                                    <v-list-item-title>AVG Time</v-list-item-title>
+                                    <v-list-item-subtitle>{{ avgTime }}ms</v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+
+                            <v-list-item three-line>
+                                <v-list-item-content>
+                                    <v-list-item-title>Requests completed</v-list-item-title>
+                                    <v-list-item-subtitle>{{ requests }} / {{ sendedRequests }}</v-list-item-subtitle>
+                                    <v-list-item-subtitle>
+                                        {{ requestsRate }}/s ({{ Math.round(1000 / requestsRate) }}ms/req)
+                                    </v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+
+                            <v-list-item three-line>
+                                <v-list-item-content>
+                                    <v-list-item-title>Tasks completed</v-list-item-title>
+                                    <v-list-item-subtitle>{{ tasks }} / {{ sendedTasks }}</v-list-item-subtitle>
+                                    <v-list-item-subtitle>
+                                        {{ tasksRate }}/s ({{ Math.round(1000 / tasksRate) }}ms/task)
+                                    </v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+
+                            <v-list-item three-line>
+                                <v-list-item-content>
+                                    <v-list-item-title>Test</v-list-item-title>
+                                    <v-list-item-subtitle>
+                                        Generating {{ count }} random integers by {{ 1000 / timeout}} requests per
+                                        second
+                                    </v-list-item-subtitle>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-card>
+                    </v-container>
+                </v-main>
+            </v-app>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+        <script>
+            let ws, timer;
+            new Vue({
+                el: '#app',
+                vuetify: new Vuetify(),
+                data() {
+                    return {
+                        timeout: 1000,
+                        timeoutMonitor: 5000,
+                        count: 10, // task count
+                        async: true, // asynchronously
+                        isProcess: false, // testing process
+                        stats: [], // tasks stats
+                        statsCounts: [], // counter of complete tasks
+                        lastValues: {
+                            memory: 0,
+                            requests: 0,
+                            tasks: 0,
+                        },
+                        monitorValues: {
+                            memory: 0,
+                            requests: 0,
+                            tasks: 0,
+                        },
+                        sendedRequests: 0,
+                        sendedTasks: 0,
+                    };
+                },
+                computed: {
+                    memory() {
+                        return (
+                            Math.round(this.stats.reduce((acc, item) => acc + item.memory, 0) / this.count / 1000) /
+                            1000
+                        );
+                    },
+                    memoryRate() {
+                        return (
+                            Math.round((this.monitorValues.memory - this.lastValues.memory) * 1000 * 1000) /
+                            this.timeoutMonitor
+                        );
+                    },
+                    avgTime() {
+                        return (
+                            Math.round((this.stats.reduce((acc, item) => acc + item.time, 0) / this.count) * 1000) /
+                            1000
+                        );
+                    },
+                    requests() {
+                        return Math.min(...this.statsCounts);
+                    },
+                    requestsRate() {
+                        return ((this.monitorValues.requests - this.lastValues.requests) * 1000) / this.timeoutMonitor;
+                    },
+
+                    tasks() {
+                        return this.statsCounts.reduce((acc, item) => acc + item, 0);
+                    },
+                    tasksRate() {
+                        return ((this.monitorValues.tasks - this.lastValues.tasks) * 1000) / this.timeoutMonitor;
+                    },
+                },
+                mounted() {
+                    ws = new WebSocket('ws://' + document.location.hostname + ':81');
+                    ws.onopen = this.onOpen;
+                    ws.onmessage = this.onMessage;
+                    timer = setInterval(this.doProcess, this.timeout);
+                    setInterval(this.doMonitor, this.timeoutMonitor);
+                },
+                methods: {
+                    send(msg) {
+                        ws.send(JSON.stringify(msg));
+                    },
+                    doProcess() {
+                        if (this.isProcess) {
+                            this.send({ async: this.async, count: this.count });
+                            this.sendedRequests = this.sendedRequests + 1;
+                            this.sendedTasks = this.sendedTasks + this.count;
+                        }
+                    },
+                    startTest() {
+                        this.isProcess = true;
+                    },
+                    stopTest() {
+                        this.isProcess = false;
+                    },
+                    doMonitor() {
+                        this.lastValues.memory = this.monitorValues.memory;
+                        this.lastValues.requests = this.monitorValues.requests;
+                        this.lastValues.tasks = this.monitorValues.tasks;
+                        this.monitorValues.memory = this.memory;
+                        this.monitorValues.requests = this.requests;
+                        this.monitorValues.tasks = this.statsCounts.reduce((acc, item) => acc + item, 0);
+                    },
+                    onOpen() {
+                        this.startTest();
+                    },
+                    onMessage(msg) {
+                        const data = JSON.parse(msg.data);
+                        Vue.set(this.stats, data.id, data);
+                        Vue.set(this.statsCounts, data.id, (this.statsCounts[data.id] || 0) + 1);
+                    },
+                },
+                watch: {
+                    timeout() {
+                        clearInterval(timer);
+                        timer = setInterval(this.doProcess, this.timeout);
+                    },
+                    count() {
+                        this.statsCounts = [];
+                        this.sendedRequests = 0;
+                        this.sendedTasks = 0;
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
