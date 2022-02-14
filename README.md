@@ -56,7 +56,9 @@ php index.php
 
 /index.php
 
-```injectablephp
+```php
+<?php
+
 $host = isset($_ENV['HOST']) ? $_ENV['HOST'] : '0.0.0.0';
 $port = isset($_ENV['PORT']) ? $_ENV['PORT'] : 80;
 $WSport = isset($_ENV['WS_PORT']) ? $_ENV['WS_PORT'] : 81;
@@ -88,7 +90,13 @@ $loop->run();
 
 /src/HTTPExampleServer.php
 
-```injectablephp
+```php
+<?php
+use Exception;
+use Psr\Http\Message\RequestInterface;
+use Ratchet\ConnectionInterface;
+use Ratchet\Http\HttpServerInterface;
+
 class HTTPExampleServer implements HttpServerInterface {
     public function onOpen(ConnectionInterface $conn, RequestInterface $request = null) {
         $contentType = 'application/json; charset=utf-8'; // or 'text/plain'
@@ -120,7 +128,15 @@ class HTTPExampleServer implements HttpServerInterface {
 
 /src/WSExampleServer.php
 
-```injectablephp
+```php
+<?php
+use Exception;
+use Psr\Http\Message\ResponseInterface;
+use Ratchet\ConnectionInterface;
+use Ratchet\RFC6455\Messaging\MessageInterface;
+use Ratchet\WebSocket\MessageComponentInterface;
+use function Amp\async;
+
 class WSExampleServer implements MessageComponentInterface {
     public function onMessage(ConnectionInterface $conn, MessageInterface $msg) {
         $task = new WSExampleTask();
@@ -153,7 +169,12 @@ class WSExampleServer implements MessageComponentInterface {
 
 /src/WSExampleTask.php
 
-```injectablephp
+```php
+<?php
+use Amp\ReactAdapter\ReactAdapter;
+use React\Http\Browser;
+use React\Promise\PromiseInterface;
+
 class WSExampleTask {
     public function execute(): PromiseInterface {
         $client = new Browser(null, ReactAdapter::get());
