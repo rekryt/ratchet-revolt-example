@@ -219,6 +219,32 @@ new Vue({
 });
 ```
 
+### Test
+```shell
+# ApacheBench
+docker run --rm jordi/ab -k -c 100 -n 100000 http://127.0.0.1/
+```
+```text
+Server Software:        ExampleServer
+Server Hostname:        127.0.0.1
+Server Port:            80
+
+Document Path:          /
+Document Length:        11420 bytes
+
+Concurrency Level:      100
+Time taken for tests:   11.767 seconds
+Complete requests:      100000
+Failed requests:        0
+Keep-Alive requests:    0
+Total transferred:      1158100000 bytes
+HTML transferred:       1142000000 bytes
+Requests per second:    8498.43 [#/sec] (mean)
+Time per request:       11.767 [ms] (mean)
+Time per request:       0.118 [ms] (mean, across all concurrent requests)
+Transfer rate:          96113.58 [Kbytes/sec] received
+```
+
 ### Other links
 
 -   https://github.com/amphp/http-client - HTTP client
