@@ -1,5 +1,5 @@
 # Non-blocking HTTP\WS Server (with PHP 8.1 fibers)
-![ratchet-revolt-example](http://rekryt.ru/files/ratchet-revolt-example.png)
+![ratchet-revolt-example](http://rekryt.ru/files/ratchet-revolt-example2.png)
 
 ### What is Revolt?
 
