@@ -17,6 +17,6 @@ class WSExampleTask {
     public function execute(): PromiseInterface {
         //delay(0); // delay gets memory leaks >((
         $client = new Browser(null, ReactAdapter::get());
-        return $client->get('http://127.0.0.1/api');
+        return $client->get('http://' . $_ENV['HTTP_HOST'] . ':' . $_ENV['HTTP_PORT'] . '/api');
     }
 }

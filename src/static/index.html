@@ -134,6 +134,10 @@
                         },
                         sendedRequests: 0,
                         sendedTasks: 0,
+                        info: {
+                            extensions: [],
+                            driver: '',
+                        },
                     };
                 },
                 computed: {
@@ -170,11 +174,15 @@
                     },
                 },
                 mounted() {
-                    ws = new WebSocket('ws://' + document.location.hostname + ':81');
+                    ws = new WebSocket('ws://' + document.location.hostname + ':{WS_PORT}');
                     ws.onopen = this.onOpen;
                     ws.onmessage = this.onMessage;
                     timer = setInterval(this.doProcess, this.timeout);
                     setInterval(this.doMonitor, this.timeoutMonitor);
+
+                    fetch('http://' + document.location.hostname + ':{HTTP_PORT}/info')
+                        .then((response) => response.json())
+                        .then((data) => (this.info = data));
                 },
                 methods: {
                     send(msg) {

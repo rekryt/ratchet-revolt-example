@@ -1,0 +1,9 @@
+config:
+  target: "http://192.168.99.100"
+  phases:
+    - duration: 10
+      arrivalRate: 10
+scenarios:
+  - flow:
+      - get:
+          url: "/"

@@ -19,7 +19,7 @@ use Amp\ReactAdapter\ReactAdapter;
 // ini_set('memory_limit', '512M');
 
 $host = isset($_ENV['HOST']) ? $_ENV['HOST'] : '0.0.0.0';
-$port = isset($_ENV['PORT']) ? $_ENV['PORT'] : 80;
+$port = isset($_ENV['HTTP_PORT']) ? $_ENV['HTTP_PORT'] : 80;
 $WSport = isset($_ENV['WS_PORT']) ? $_ENV['WS_PORT'] : 81;
 
 // Get react Loop over amphp Loop

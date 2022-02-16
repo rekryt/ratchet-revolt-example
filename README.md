@@ -28,15 +28,19 @@ AMPHP is a collection of event-driven libraries for PHP designed with fibers and
 
 -   https://github.com/amphp/amp/commits/v3 - Amphp v3
 
-## Usage
+## Installation
+```shell
+cp .env.example .env
+```
 
+## Usage
 ```shell
 docker-compose up -d
 ```
 
-HTTP server starts at: http://`docker-machine ip`:80/
+HTTP server starts at: http://`${HTTP_HOST}`:80/
 
-WS server starts at: ws://`docker-machine ip`:81/
+WS server starts at: ws://`${HTTP_HOST}`:81/
 
 ## Usage (docker)
 
@@ -104,7 +108,7 @@ class HTTPExampleServer implements HttpServerInterface {
             $body = rand(0, 100);
         } else {
             $contentType = 'text/html; charset=UTF-8';
-            $body = file_get_contents(__DIR__ . '/static/index.html');
+            $body = $this->html;
         }
 
         $e = "\r\n";
@@ -122,7 +126,7 @@ class HTTPExampleServer implements HttpServerInterface {
         $conn->send($headers . $body);
         $conn->close();
     }
-...
+    ...
 }
 ```
 
@@ -163,7 +167,7 @@ class WSExampleServer implements MessageComponentInterface {
             }
         }
     }
-...
+    ...
 }
 ```
 
@@ -178,7 +182,7 @@ use React\Promise\PromiseInterface;
 class WSExampleTask {
     public function execute(): PromiseInterface {
         $client = new Browser(null, ReactAdapter::get());
-        return $client->get('http://127.0.0.1/api');
+        return $client->get('http://' . $_ENV['HTTP_HOST'] . ':' . $_ENV['HTTP_PORT'] . '/api');
     }
 }
 ```

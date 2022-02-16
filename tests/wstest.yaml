@@ -1,0 +1,18 @@
+config:
+    target: "ws://192.168.99.100:81"
+    phases:
+        - duration: 20
+          arrivalRate: 10
+        #  maxVusers: 10000
+    ws:
+        # Ignore SSL certificate errors
+        # - useful in *development* with self-signed certs
+        rejectUnauthorized: false
+        subprotocols:
+          - json
+scenarios:
+    - engine: "ws"
+      name: Get random integer
+      flow:
+          - connect: "{{ target }}"
+          - send: '{"count": 1, "async": true}'

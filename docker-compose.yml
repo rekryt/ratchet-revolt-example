@@ -6,8 +6,15 @@ services:
     build:
       context: .
     ports:
-      - 80:80
-      - 81:81
+      - ${HTTP_PORT:-80}:${HTTP_PORT:-80}
+      - ${WS_PORT:-81}:${WS_PORT:-81}
     volumes:
       - ./src:/app/src
       - ./index.php:/app/index.php
+    env_file:
+      - .env
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000

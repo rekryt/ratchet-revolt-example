@@ -9,6 +9,9 @@ RUN apt-get install -y \
         zip \
 	&& docker-php-ext-install zip
 
+# git
+RUN apt-get install -y git
+
 # mysqli
 RUN docker-php-ext-install mysqli \
 	&& docker-php-ext-enable mysqli
@@ -27,8 +30,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 RUN docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-install pcntl
 
-# git
-RUN apt-get install -y git
+# pecl/ev
+RUN pecl install -o -f ev \
+    && docker-php-ext-enable ev
+
+# JIT
+ADD .docker/php/docker-php-enable-jit.ini /usr/local/etc/php/conf.d/docker-php-enable-jit.ini
 
 RUN apt-get clean
 

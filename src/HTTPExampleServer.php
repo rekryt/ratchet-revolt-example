@@ -12,6 +12,21 @@ use Ratchet\Http\HttpServerInterface;
  */
 class HTTPExampleServer implements HttpServerInterface {
     /**
+     * @var string
+     */
+    private string $html;
+
+    /**
+     * HTTPExampleServer constructor.
+     */
+    public function __construct() {
+        $this->html = file_get_contents(__DIR__ . '/static/index.html');
+        foreach ($_ENV as $key => $value) {
+            $this->html = str_replace('{' . $key . '}', $value, $this->html);
+        }
+    }
+
+    /**
      * @param ConnectionInterface $conn
      * @param RequestInterface|null $request
      */
@@ -19,9 +34,14 @@ class HTTPExampleServer implements HttpServerInterface {
         $contentType = 'application/json; charset=utf-8'; // or 'text/plain'
         if ($request->getUri()->getPath() == '/api') {
             $body = rand(0, 100);
+        } elseif ($request->getUri()->getPath() == '/info') {
+            $body = json_encode([
+                'extensions' => get_loaded_extensions(),
+                'driver' => isset($_ENV['REVOLT_DRIVER']) ? $_ENV['REVOLT_DRIVER'] : 'default',
+            ]);
         } else {
             $contentType = 'text/html; charset=UTF-8';
-            $body = file_get_contents(__DIR__ . '/static/index.html');
+            $body = $this->html;
         }
 
         $e = "\r\n";
