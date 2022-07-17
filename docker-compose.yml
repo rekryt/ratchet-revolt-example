@@ -1,6 +1,6 @@
 version: '3'
 services:
-  php81:
+  php:
     container_name: php
     restart: always
     build:
@@ -9,8 +9,7 @@ services:
       - ${HTTP_PORT:-80}:${HTTP_PORT:-80}
       - ${WS_PORT:-81}:${WS_PORT:-81}
     volumes:
-      - ./src:/app/src
-      - ./index.php:/app/index.php
+      - .:/app/
     env_file:
       - .env
     ulimits:

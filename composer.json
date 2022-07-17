@@ -10,25 +10,11 @@
             "homepage": "https://vk.com/krupkin.sergey"
         }
     ],
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "rekryt/react-adapter",
-                "version": "1.0",
-                "source": {
-                    "url": "https://github.com/Rekryt/react-adapter.git",
-                    "type": "git",
-                    "reference":"master"
-                }
-            }
-        }
-    ],
     "require": {
         "php": "^8.1",
         "revolt/event-loop": "^0.2.1",
-        "amphp/amp": "v3.x-dev as v2.6.1",
-        "rekryt/react-adapter": "1.0",
+        "amphp/amp": "v3.x-dev",
+        "amphp/react-adapter": "v3.x-dev",
         "react/http": "^1.6",
         "cboden/ratchet": "^0.4.4"
     },
@@ -37,8 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "RatchetRevoltExample\\": "src/",
-            "Amp\\ReactAdapter\\": "vendor/rekryt/react-adapter/src/"
+            "RatchetRevoltExample\\": "src/"
         }
     },
     "autoload-dev": {

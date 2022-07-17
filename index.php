@@ -28,6 +28,7 @@ $loop = ReactAdapter::get();
 // Create socket and http server
 $socket = new SocketServer($host . ':' . $port, [], $loop);
 $http = new HttpServer(new HTTPExampleServer());
+
 // Add HTTP server to loop
 new IoServer($http, $socket, $loop);
 echo 'Listening on: ' . $host . ':' . $port . PHP_EOL;
@@ -35,6 +36,7 @@ echo 'Listening on: ' . $host . ':' . $port . PHP_EOL;
 // Create socket and ws server
 $ws_socket = new SocketServer($host . ':' . $WSport, [], $loop);
 $ws = new HttpServer(new WsServer(new WSExampleServer()));
+
 // Add WS server to loop
 new IoServer($ws, $ws_socket, $loop);
 echo 'Listening on: ' . $host . ':' . $WSport . PHP_EOL;
